@@ -47,6 +47,14 @@ php artisan push:test
 - `laravel-notification-channels/webpush` 11, 12 or 13 (installed with this package)
 - HTTPS in production. Browsers allow push on `localhost` without it.
 
+## Browser support
+
+Tested in Chrome with Google's push service: subscribing and turning off from the button, normal and
+declarative pushes, a real 410 removing a dead subscription, Livewire and `wire:navigate`, and the
+blocked state. **Not tested yet:** clicking a delivered notification (the click target is set and checked,
+but the macOS banner never appeared on the test machine), Firefox, and Safari on macOS and iOS. Reports
+from those browsers are welcome in the [issues](https://github.com/amjadiqbal/laravel-webpush-kit/issues).
+
 ## Installation
 
 ```bash
