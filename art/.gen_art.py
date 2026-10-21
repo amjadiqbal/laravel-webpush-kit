@@ -95,7 +95,7 @@ def banner(dark):
         icon_at(60, 75, 0.29297),
         f'  <text x="235" y="148" font-family="{SANS}" font-size="52" font-weight="700" fill="{t1}">Laravel WebPush Kit</text>',
         f'  <text x="238" y="188" font-family="{SANS}" font-size="21" font-weight="500" fill="{t2}" letter-spacing="0.3">The browser side of Laravel web push notifications</text>',
-        pills(238, 214, ['subscribe button', 'service worker', 'iOS home screen'], 15, 32, pf, ps, pt),
+        pills(238, 214, ['subscribe button', 'service worker', 'push:test'], 15, 32, pf, ps, pt),
         cards(890, 52, 280, pf, ps, pt, mono),
         f'  <text x="1170" y="275" text-anchor="end" font-family="{SANS}" font-size="15" fill="{foot}">amjadiqbal/laravel-webpush-kit</text>',
     ])
@@ -114,9 +114,9 @@ def social():
         f'  <text x="470" y="200" font-family="{SANS}" font-size="66" font-weight="700" fill="#F8FAFC">Laravel WebPush</text>',
         f'  <text x="470" y="276" font-family="{SANS}" font-size="66" font-weight="700" fill="#F8FAFC">Kit</text>',
         f'  <text x="472" y="330" font-family="{SANS}" font-size="26" font-weight="600" fill="{ACC}" letter-spacing="0.3">Browser push for Laravel notifications.</text>',
-        f'  <text x="472" y="366" font-family="{SANS}" font-size="26" font-weight="600" fill="{ACC}" letter-spacing="0.3">Button, service worker, iOS and cleanup.</text>',
+        f'  <text x="472" y="366" font-family="{SANS}" font-size="26" font-weight="600" fill="{ACC}" letter-spacing="0.3">Button, service worker, push:test and cleanup.</text>',
         pills(472, 410, ['polite permission prompt', 'service worker', 'Blade · Livewire'], 17, 38, '#16213A', '#24324F', '#CBD5E1'),
-        pills(472, 460, ['iOS home-screen guide', 'push:test', '404/410 pruning'], 17, 38, '#16213A', '#24324F', '#CBD5E1'),
+        pills(472, 460, ['declarative push', 'push:test', '404/410 pruning'], 17, 38, '#16213A', '#24324F', '#CBD5E1'),
         f'  <text x="472" y="560" font-family="{SANS}" font-size="19" font-weight="600" fill="#94A3B8">Built on laravel-notification-channels/webpush</text>',
         f'  <text x="1170" y="605" text-anchor="end" font-family="{SANS}" font-size="19" fill="#64748B">github.com/amjadiqbal/laravel-webpush-kit</text>',
     ])
