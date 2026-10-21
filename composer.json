@@ -1,0 +1,83 @@
+{
+    "name": "amjadiqbal/laravel-webpush-kit",
+    "description": "The browser side of Laravel web push notifications for laravel-notification-channels/webpush: a Blade and Livewire subscribe button with a polite two-step permission prompt, a service worker, routes that save and delete push subscriptions, iOS Home Screen guidance, declarative web push, and a push:test artisan command.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "amjadiqbal",
+        "laravel",
+        "laravel-package",
+        "web-push",
+        "webpush",
+        "push-notifications",
+        "browser-notifications",
+        "service-worker",
+        "vapid",
+        "pwa",
+        "livewire",
+        "blade",
+        "ios",
+        "declarative-web-push",
+        "notifications"
+    ],
+    "homepage": "https://github.com/amjadiqbal/laravel-webpush-kit",
+    "authors": [
+        {
+            "name": "Amjad Iqbal",
+            "homepage": "https://amjad.com.pk",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/amjadiqbal/laravel-webpush-kit/issues",
+        "source": "https://github.com/amjadiqbal/laravel-webpush-kit",
+        "docs": "https://github.com/amjadiqbal/laravel-webpush-kit#readme"
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/contracts": "^12.0|^13.0",
+        "illuminate/http": "^12.0|^13.0",
+        "illuminate/notifications": "^12.0|^13.0",
+        "illuminate/routing": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0",
+        "illuminate/view": "^12.0|^13.0",
+        "laravel-notification-channels/webpush": "^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "AmjadIqbal\\WebPushKit\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AmjadIqbal\\WebPushKit\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AmjadIqbal\\WebPushKit\\WebPushKitServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "pint": "vendor/bin/pint --test",
+        "analyse": "vendor/bin/phpstan analyse --memory-limit=1G"
+    }
+}
