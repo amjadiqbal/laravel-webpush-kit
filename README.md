@@ -23,6 +23,8 @@ subscription, and the iPhone rules. This package covers that part:
 - **`php artisan push:test`**, which sends a real push and shows what each push service answered, including
   dead subscriptions the channel removes on 404 and 410.
 
+Docs and demo: https://amjad.com.pk/laravel/packages/laravel-webpush-kit
+
 [![Latest Version](https://img.shields.io/packagist/v/amjadiqbal/laravel-webpush-kit.svg?style=flat-square)](https://packagist.org/packages/amjadiqbal/laravel-webpush-kit)
 [![PHP Version](https://img.shields.io/packagist/php-v/amjadiqbal/laravel-webpush-kit?style=flat-square)](https://packagist.org/packages/amjadiqbal/laravel-webpush-kit)
 [![License](https://img.shields.io/packagist/l/amjadiqbal/laravel-webpush-kit.svg?style=flat-square)](LICENSE.md)

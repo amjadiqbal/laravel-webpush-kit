@@ -20,7 +20,7 @@
         "declarative-web-push",
         "notifications"
     ],
-    "homepage": "https://github.com/amjadiqbal/laravel-webpush-kit",
+    "homepage": "https://amjad.com.pk/laravel/packages/laravel-webpush-kit",
     "authors": [
         {
             "name": "Amjad Iqbal",
@@ -31,7 +31,7 @@
     "support": {
         "issues": "https://github.com/amjadiqbal/laravel-webpush-kit/issues",
         "source": "https://github.com/amjadiqbal/laravel-webpush-kit",
-        "docs": "https://github.com/amjadiqbal/laravel-webpush-kit#readme"
+        "docs": "https://amjad.com.pk/laravel/packages/laravel-webpush-kit"
     },
     "require": {
         "php": "^8.3",
