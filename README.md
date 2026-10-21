@@ -98,6 +98,7 @@ user blocks notifications, a site can't ask again.
 | `prompt` | `click` | `auto` shows the card by itself after `delay` seconds |
 | `delay` | `5` | Seconds before the `auto` card appears |
 | `remind-after-days` | `7` | After **Not now**, how long `auto` stays quiet |
+| `theme` | page | `dark`, or `auto` to follow the system. By default it's dark inside `.dark` or `[data-theme="dark"]` |
 
 ```blade
 <x-webpush-kit::button
@@ -236,8 +237,8 @@ php artisan vendor:publish --tag=webpush-kit-config
 | `notifiable` | users provider model | The model `push:test` sends to |
 
 Texts are translatable: `php artisan vendor:publish --tag=webpush-kit-translations`. The button's colours
-are CSS variables (`--wpk-accent`, `--wpk-text`, `--wpk-surface`, `--wpk-border`), and dark mode follows
-the system.
+are CSS variables (`--wpk-accent`, `--wpk-text`, `--wpk-surface`, `--wpk-border`). Dark mode follows the
+page (`.dark` or `data-theme="dark"` on a parent), or the system with `theme="auto"`.
 
 ### Already have a service worker?
 

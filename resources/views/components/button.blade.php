@@ -4,6 +4,7 @@
     'remindAfterDays' => 7,
     'title' => null,
     'body' => null,
+    'theme' => null,
 ])
 @auth(config('webpush-kit.guard'))
 @php
@@ -22,6 +23,7 @@
         sw-scope="{{ '/'.ltrim((string) config('webpush-kit.service_worker.scope', '/'), '/') }}"
         @if (! config('webpush-kit.service_worker.register', true)) sw-register="false" @endif
         csrf="{{ csrf_token() }}"
+        @if ($theme) theme="{{ $theme }}" @endif
         prompt="{{ $prompt }}"
         delay="{{ (int) $delay }}"
         remind-after-days="{{ (int) $remindAfterDays }}"
