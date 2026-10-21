@@ -49,3 +49,12 @@ it('adds the about entry', function () {
         ->expectsOutputToContain('amjad.com.pk/contact?utm_source=artisan&utm_medium=about&utm_campaign=laravel-webpush-kit')
         ->assertSuccessful();
 });
+
+it('loads the browser script once when the head and the button are both on the page', function () {
+    $this->actingAs($this->user());
+
+    $html = Blade::render('<x-webpush-kit::head /><x-webpush-kit::button /><x-webpush-kit::button />');
+
+    expect(substr_count($html, 'webpush-kit.js'))->toBe(1)
+        ->and(substr_count($html, '<webpush-kit-button'))->toBe(2);
+});

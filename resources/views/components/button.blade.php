@@ -13,7 +13,7 @@
     if ($body !== null) $texts['prompt_body'] = $body;
 @endphp
 <div wire:ignore {{ $attributes->only(['class', 'style', 'id']) }}>
-    @once
+    @once('webpush-kit-script')
         <script src="{{ \AmjadIqbal\WebPushKit\WebPushKit::scriptUrl() }}" defer data-navigate-once></script>
     @endonce
     <webpush-kit-button
