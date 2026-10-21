@@ -68,6 +68,13 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
         return encodings.includes('aes128gcm') ? 'aes128gcm' : encodings[0];
     };
 
+    // A browser without a working push service (some Chromium builds, blocked networks) can
+    // leave subscribe() pending forever; give up so the button doesn't stay busy.
+    const withTimeout = (promise, ms, what) => Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(`${what} timed out`)), ms)),
+    ]);
+
     const registrations = new Map();
 
     const waitForActive = (registration) => new Promise((resolve) => {
@@ -217,7 +224,7 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
                     local.set(DISMISS_KEY, String(Date.now()));
                     return this.render(Notification.permission === 'denied' ? 'denied' : 'idle');
                 }
-                const registration = await this.registration();
+                const registration = await withTimeout(this.registration(), 15000, 'Service worker registration');
                 const options = { userVisibleOnly: true, applicationServerKey: keyToBytes(this.getAttribute('vapid-key') || '') };
                 let subscription = await registration.pushManager.getSubscription();
                 if (subscription && !sameKey(subscription, this.getAttribute('vapid-key'))) {
@@ -225,7 +232,7 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
                     await subscription.unsubscribe();
                     subscription = null;
                 }
-                subscription = subscription || await registration.pushManager.subscribe(options);
+                subscription = subscription || await withTimeout(registration.pushManager.subscribe(options), 20000, 'pushManager.subscribe()');
                 await this.save(subscription);
                 session.set(SYNC_KEY, subscription.endpoint);
                 local.remove(DISMISS_KEY);
