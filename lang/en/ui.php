@@ -13,6 +13,7 @@ return [
     'unsupported' => 'This browser can’t receive push notifications.',
     'insecure' => 'Push notifications need HTTPS (or localhost).',
     'ios_install' => 'To get notifications on iPhone or iPad, tap Share, then “Add to Home Screen”, and open this site from your Home Screen.',
+    'slow' => 'Still waiting for your browser’s push service. The first time can take half a minute.',
     'dismissed' => 'Your browser didn’t turn notifications on. If you see a bell or settings icon in the address bar, allow notifications there.',
     'error' => 'Couldn’t turn on notifications. Please try again.',
 ];

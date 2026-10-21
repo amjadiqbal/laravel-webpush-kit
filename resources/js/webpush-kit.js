@@ -69,8 +69,7 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
         return encodings.includes('aes128gcm') ? 'aes128gcm' : encodings[0];
     };
 
-    // A browser without a working push service (some Chromium builds, blocked networks) can
-    // leave subscribe() pending forever; give up so the button doesn't stay busy.
+    // A service worker that never activates (a broken script, a blocked network) would leave the button busy.
     const withTimeout = (promise, ms, what) => Promise.race([
         promise,
         new Promise((_, reject) => setTimeout(() => reject(new Error(`${what} timed out`)), ms)),
@@ -236,16 +235,30 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
                     await subscription.unsubscribe();
                     subscription = null;
                 }
-                subscription = subscription || await withTimeout(registration.pushManager.subscribe(options), 20000, 'pushManager.subscribe()');
-                await this.save(subscription);
-                session.set(SYNC_KEY, subscription.endpoint);
-                local.remove(DISMISS_KEY);
-                this.render('subscribed');
-                this.emit('webpush-kit:subscribed', { endpoint: subscription.endpoint });
+                if (!subscription) {
+                    // A fresh registration with the push service can take Chrome 20s or more. After 15s
+                    // say so, but keep waiting: a push service that never answers leaves the button usable.
+                    const pending = registration.pushManager.subscribe(options);
+                    const slow = setTimeout(() => {
+                        if (this.state === 'busy') {
+                            this.render('busy', this.texts.slow || '');
+                        }
+                    }, 15000);
+                    subscription = await pending.finally(() => clearTimeout(slow));
+                }
+                await this.subscribed(subscription);
             } catch (error) {
                 console.error('[webpush-kit]', error);
                 this.render('idle', this.texts.error || 'Error');
             }
+        }
+
+        async subscribed(subscription) {
+            await this.save(subscription);
+            session.set(SYNC_KEY, subscription.endpoint);
+            local.remove(DISMISS_KEY);
+            this.render('subscribed');
+            this.emit('webpush-kit:subscribed', { endpoint: subscription.endpoint });
         }
 
         async unsubscribe() {
