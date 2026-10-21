@@ -68,7 +68,9 @@ final class PushTestCommand extends Command
         app(WebPushChannel::class)->send($notifiable, new TestPush(
             (string) $this->option('title'),
             (string) $this->option('body'),
-            url((string) $this->option('url')),
+            // The service worker resolves a path against its own origin, so APP_URL can't send the
+            // click to the wrong host. Declarative messages need an absolute navigate URL.
+            $this->option('declarative') ? url((string) $this->option('url')) : (string) $this->option('url'),
             (bool) $this->option('declarative'),
         ));
 

@@ -25,7 +25,7 @@ it('sends to the newest subscriber and reports each push service', function () {
 
     $payload = json_decode($fake->sent[0]['payload'], true);
     expect($payload)->toMatchArray(['title' => 'Test notification', 'body' => 'Web push is working.'])
-        ->and($payload['data']['url'])->toBe(url('/orders/7'));
+        ->and($payload['data']['url'])->toBe('/orders/7');
 });
 
 it('shows the channel removing a dead subscription on 410', function () {
