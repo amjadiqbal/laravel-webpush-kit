@@ -14,12 +14,13 @@ subscription, and the iPhone rules. This package covers that part:
 
 - a **Blade and Livewire subscribe button** with a polite two-step permission prompt. The browser's own
   prompt only appears after the user says yes on your page;
-- a **service worker** that shows normal and **declarative web push** messages and opens the right page on click;
+- a **service worker** that shows normal and **declarative web push** messages, and sets the page a click
+  should open (clicking a delivered notification is not tested yet, see Browser support);
 - **routes** that save and delete the signed-in user's subscription through the channel's own
   `updatePushSubscription()` and `deletePushSubscription()`;
 - **iPhone and iPad guidance**: Add to Home Screen when it's needed, plus an optional web app manifest;
 - **subscriptions that stay alive**: the service worker re-subscribes when the browser rotates a subscription,
-  and each page visit re-syncs it;
+  and a page with the button re-syncs it once per browser tab session;
 - **`php artisan push:test`**, which sends a real push and shows what each push service answered, including
   dead subscriptions the channel removes on 404 and 410.
 
@@ -80,7 +81,8 @@ class User extends Authenticatable
 }
 ```
 
-Set a contact for the push services in `.env`. Safari rejects pushes when it's missing or malformed:
+Set a contact for the push services in `.env`. Apple's push service rejects a push whose VAPID subject isn't a
+`mailto:` or `https:` URL, and `push:test` warns when yours looks wrong:
 
 ```dotenv
 VAPID_SUBJECT=mailto:you@yourdomain.com
@@ -138,8 +140,9 @@ listen for:
 
 ### Sending notifications
 
-Send notifications with the channel as usual. To open a page on click, put its URL in `data.url`. Each
-action can open its own page through `data.actions`:
+Send notifications with the channel as usual. To set the page a click opens, put its URL in `data.url`. Each
+action can set its own page through `data.actions`. (The service worker's click handling is not tested in a
+real browser yet.)
 
 ```php
 use NotificationChannels\WebPush\WebPushChannel;
@@ -166,9 +169,10 @@ public function toWebPush($notifiable, $notification): WebPushMessage
 
 ### Declarative web push
 
-Safari 18.4 (iOS, iPadOS) and macOS 15.5 can show a **declarative web push** message with no service
-worker running. Other browsers still need one. The kit's service worker reads the same message, so one
-notification works in both:
+According to WebKit, Safari on iOS and iPadOS 18.4 and macOS 15.5 can show a **declarative web push** message
+with no service worker running (not tested with this package yet). Other browsers still need a service
+worker, and the kit's reads the same message: in Chrome a declarative push is delivered and shown by it
+(tested). One notification covers both:
 
 ```php
 use NotificationChannels\WebPush\DeclarativeWebPushMessage;
@@ -186,10 +190,12 @@ public function toWebPush($notifiable, $notification): DeclarativeWebPushMessage
 ### iPhone and iPad
 
 iOS and iPadOS 16.4+ only allow web push for a site added to the Home Screen, and the site needs a web app
-manifest whose `display` is `standalone`. In Safari, the button explains this instead of failing. Opened
-from the Home Screen, it works like everywhere else.
+manifest whose `display` is `standalone` or `fullscreen`. In Safari, the button explains this instead of
+failing. None of this is tested on an iPhone or iPad yet.
 
-If your app has no manifest yet, turn on the kit's and add the head tags:
+If your app has no manifest yet, turn on the kit's and add the head tags. `<x-webpush-kit::head />` always
+emits the `mobile-web-app-capable` and `apple-mobile-web-app-capable` meta tags and the kit's script; the
+manifest link only when the manifest is on:
 
 ```dotenv
 WEBPUSH_KIT_MANIFEST=true
@@ -201,15 +207,18 @@ WEBPUSH_KIT_MANIFEST=true
 </head>
 ```
 
-Set the name, colours and icons under `manifest` in `config/webpush-kit.php`.
+Set the name, colours, icons and `display` (`standalone` or `fullscreen`) under `manifest` in
+`config/webpush-kit.php`.
 
 ### Testing a push
 
 ```bash
 php artisan push:test                  # the user with the newest subscription
 php artisan push:test 42               # user 42
-php artisan push:test --url=/orders    # the page a click opens
+php artisan push:test --url=/orders    # the page a click should open
 php artisan push:test --declarative    # a declarative web push message
+php artisan push:test --title="Hi" --body="It works"   # your own text
+php artisan push:test --model="App\Models\Admin"       # another notifiable model
 ```
 
 ```
@@ -227,7 +236,8 @@ It checks the VAPID keys and `VAPID_SUBJECT` first, then sends through the chann
 nothing was delivered. When a push service answers 404 or 410, the channel deletes that subscription;
 the table shows when that happened.
 
-`php artisan about` shows the kit's version and whether the VAPID keys and subject are set.
+`php artisan about` shows the kit's version, whether the VAPID keys are set, and whether `VAPID_SUBJECT`
+passes the same checks as `push:test` (`ok`, or `check` when it doesn't).
 
 ## Configuration
 
@@ -239,6 +249,7 @@ php artisan vendor:publish --tag=webpush-kit-config
 |---|---|---|
 | `routes.prefix` | `webpush` | The kit's routes: `POST`/`DELETE /webpush/subscriptions`, `POST /webpush/subscriptions/rotate`, `GET /webpush/webpush-kit.js` |
 | `routes.middleware` | `['web', 'auth']` | Middleware for the subscription routes |
+| `routes.domain` | `null` | A domain for all of the kit's routes, including the service worker and manifest |
 | `guard` | `null` | The auth guard the button checks |
 | `service_worker.path` | `webpush-sw.js` | Where the service worker is served (at the site root, so it can control every page) |
 | `service_worker.scope` | `/` | Its scope |
@@ -247,7 +258,8 @@ php artisan vendor:publish --tag=webpush-kit-config
 | `notifiable` | users provider model | The model `push:test` sends to |
 
 Texts are translatable: `php artisan vendor:publish --tag=webpush-kit-translations`. The button's colours
-are CSS variables (`--wpk-accent`, `--wpk-text`, `--wpk-surface`, `--wpk-border`). Dark mode follows the
+are CSS variables (`--wpk-accent`, `--wpk-accent-text`, `--wpk-text`, `--wpk-muted`, `--wpk-surface`,
+`--wpk-border`). Dark mode follows the
 page (`.dark` or `data-theme="dark"` on a parent), or the system with `theme="auto"`.
 
 ### Already have a service worker?
@@ -275,8 +287,8 @@ php artisan vendor:publish --tag=webpush-kit-service-worker
   subscriptions route, which calls `updatePushSubscription()`. If another user had that endpoint, the
   channel moves it to the user who just subscribed.
 - **Unsubscribe**: `DELETE` to the server (`deletePushSubscription()`), then `subscription.unsubscribe()`.
-- **Staying in sync**: once per browser session, a page with the button saves the current subscription
-  again, so a row the server lost comes back. When the push service rotates a subscription, the
+- **Staying in sync**: once per browser tab session (`sessionStorage`), a page with the button saves the
+  current subscription again, so a row the server lost comes back. When the push service rotates a subscription, the
   `pushsubscriptionchange` handler subscribes again and replaces the old endpoint through the rotate route.
   The rotate route has no CSRF token (a service worker can't read one), so it only accepts same-origin
   requests from a signed-in user, and only removes endpoints that user owns.
