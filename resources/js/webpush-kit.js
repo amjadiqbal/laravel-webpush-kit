@@ -223,7 +223,10 @@ webpush-kit-button svg{width:1.1em;height:1.1em}`;
             try {
                 if ((await permission) !== 'granted') {
                     local.set(DISMISS_KEY, String(Date.now()));
-                    return this.render(Notification.permission === 'denied' ? 'denied' : 'idle');
+                    // 'default' means the prompt was closed or Chrome showed its quiet bell icon instead.
+                    return Notification.permission === 'denied'
+                        ? this.render('denied')
+                        : this.render('idle', this.texts.dismissed || '');
                 }
                 const registration = await withTimeout(this.registration(), 15000, 'Service worker registration');
                 const options = { userVisibleOnly: true, applicationServerKey: keyToBytes(this.getAttribute('vapid-key') || '') };
